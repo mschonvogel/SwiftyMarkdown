@@ -379,9 +379,8 @@ public class SwiftyMarkdown {
 
                 matchedCharacters.removeRange(newRange)
             }
-
         }
-        
+
         return (matchedCharacters, foundCharacters.stringByReplacingOccurrencesOfString("\\", withString: ""))
     }
     
