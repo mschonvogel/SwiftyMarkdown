@@ -2,6 +2,12 @@
 
 SwiftyMarkdown converts Markdown files and strings into NSAttributedString using sensible defaults and a Swift-style syntax. It uses dynamic type to set the font size correctly with whatever font you'd like to use
 
+## Installation
+
+CocoaPods:
+
+`pod 'SwiftyMarkdown'`
+
 ## Usage
 
 Text string
@@ -44,3 +50,5 @@ md.h1.fontName = "AvenirNextCondensed-Bold"
 ## Screenshot
 
 ![Screenshot](http://f.cl.ly/items/12332k3f2s0s0C281h2u/swiftymarkdown.png)
+
+
