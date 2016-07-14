@@ -348,7 +348,7 @@ public class SwiftyMarkdown {
         if let hasString = followingString as? String {
 
             let prefix = ( currentStyle == .Code && start ) ? "\t" : ""
-            let attString = attributedStringFromString(prefix + hasString, withStyle: currentStyle)
+            let attString = attributedStringFromString(prefix + hasString, withStyle: currentStyle, attributes: attributes)
             attributedString.appendAttributedString(attString)
         }
         let suffix = self.tagFromScanner(scanner)
@@ -385,16 +385,25 @@ public class SwiftyMarkdown {
     }
     
     
-    func attributedStringFromString(string : String, withStyle style : LineStyle) -> NSAttributedString {
+    func attributedStringFromString(string : String, withStyle style : LineStyle, attributes : [String : AnyObject] = [:]) -> NSAttributedString {
         
-        if let currentUserAttributesDictionary = currentUserAttributesDictionary {
+        if var currentUserAttributesDictionary = currentUserAttributesDictionary {
+            currentUserAttributesDictionary.unionInPlace(attributes)
             return NSAttributedString(string: string, attributes: currentUserAttributesDictionary)
         }
         
-        var dynamicTypeAttributes = AttributesDictionary()
-        
+        var dynamicTypeAttributes = attributes
         dynamicTypeAttributes[NSFontAttributeName] = UIFont(name: currentStyle.fontName ?? currentType.fontName!, size: currentType.fontSize)
         
         return NSAttributedString(string: string, attributes: dynamicTypeAttributes)
+    }
+}
+
+private extension Dictionary {
+    mutating func unionInPlace<S: SequenceType where
+        S.Generator.Element == (Key,Value)>(sequence: S) {
+        for (key, value) in sequence {
+            self[key] = value
+        }
     }
 }
