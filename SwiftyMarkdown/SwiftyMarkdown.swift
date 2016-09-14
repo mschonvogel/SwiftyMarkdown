@@ -19,42 +19,42 @@ public typealias AttributesDictionary = [String: Any]
 enum LineType : Int {
     case h1, h2, h3, h4, h5, h6, body
 
-    var textStyle: String {
+    var textStyle: UIFontTextStyle {
         switch self {
         case .h1:
             if #available(iOS 9, *) {
-                return UIFontTextStyle.title1.rawValue
+                return .title1
             } else {
-                return UIFontTextStyle.headline.rawValue
+                return .headline
             }
         case .h2:
             if #available(iOS 9, *) {
-                return UIFontTextStyle.title2.rawValue
+                return .title2
             } else {
-                return UIFontTextStyle.headline.rawValue
+                return .headline
             }
         case .h3:
             if #available(iOS 9, *) {
-                return UIFontTextStyle.title2.rawValue
+                return .title2
             } else {
-                return UIFontTextStyle.subheadline.rawValue
+                return .subheadline
             }
         case .h4:
-            return UIFontTextStyle.headline.rawValue
+            return .headline
         case .h5:
-            return UIFontTextStyle.subheadline.rawValue
+            return .subheadline
         case .h6:
-            return UIFontTextStyle.footnote.rawValue
+            return .footnote
         default:
-            return UIFontTextStyle.body.rawValue
+            return .body
         }
     }
     var fontName: String? {
-        return UIFont.preferredFont(forTextStyle: UIFontTextStyle(rawValue: textStyle)).fontName
+        return UIFont.preferredFont(forTextStyle: textStyle).fontName
     }
 
     var fontSize: CGFloat {
-        let font = UIFont.preferredFont(forTextStyle: UIFontTextStyle(rawValue: textStyle))
+        let font = UIFont.preferredFont(forTextStyle: textStyle)
         let styleDescriptor = font.fontDescriptor
         return styleDescriptor.fontAttributes[UIFontDescriptorSizeAttribute] as! CGFloat
     }
@@ -321,7 +321,7 @@ open class SwiftyMarkdown {
 
         currentStyle = LineStyle.styleFromString(results.foundCharacters)
 
-        var attributes = [String : AnyObject]()
+        var attributes = [String : Any]()
         if currentStyle == .link {
 
             var linkText : NSString?
@@ -384,12 +384,13 @@ open class SwiftyMarkdown {
 
         return (matchedCharacters, foundCharacters.replacingOccurrences(of: "\\", with: ""))
     }
-    
-    
-    func attributedStringFromString(_ string : String, withStyle style : LineStyle, attributes : [String : AnyObject] = [:]) -> NSAttributedString {
+
+    func attributedStringFromString(_ string: String, withStyle style: LineStyle, attributes: AttributesDictionary = [:]) -> NSAttributedString {
         
         if var currentUserAttributesDictionary = currentUserAttributesDictionary {
-//            currentUserAttributesDictionary.unionInPlace(attributes)
+            for (key, value) in attributes {
+                currentUserAttributesDictionary.updateValue(value, forKey: key)
+            }
             return NSAttributedString(string: string, attributes: currentUserAttributesDictionary)
         }
         
@@ -397,14 +398,5 @@ open class SwiftyMarkdown {
         dynamicTypeAttributes[NSFontAttributeName] = UIFont(name: currentStyle.fontName ?? currentType.fontName!, size: currentType.fontSize)
         
         return NSAttributedString(string: string, attributes: dynamicTypeAttributes)
-    }
-}
-
-private extension Dictionary {
-    mutating func unionInPlace<S: Sequence>(_ sequence: S) where
-        S.Iterator.Element == (Key,Value) {
-        for (key, value) in sequence {
-            self[key] = value
-        }
     }
 }
